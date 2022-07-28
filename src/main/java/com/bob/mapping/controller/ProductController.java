@@ -25,4 +25,9 @@ public class ProductController {
     public Receipt product1(@PathVariable("id") int id){
         return receiptService.calcReceipt1(id);
     }
+
+    @GetMapping("product2/{id}")
+    public Receipt product2(@PathVariable("id") int id){
+        return receiptService.calcReceipt2(id);
+    }
 }

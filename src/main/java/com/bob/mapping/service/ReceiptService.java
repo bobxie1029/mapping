@@ -3,6 +3,7 @@ package com.bob.mapping.service;
 
 import com.bob.mapping.dto.Item;
 import com.bob.mapping.dto.Receipt;
+import com.bob.mapping.entities.ItemData;
 import com.bob.mapping.entities.OrderDetailEntity;
 import com.bob.mapping.entities.OrderEntity;
 import com.bob.mapping.entities.ProductEntity;
@@ -34,7 +35,8 @@ public class ReceiptService {
 
     //after you get the reference of the object, you can use the method to communicate with it.
     public ReceiptService(OrderRepository orderRepository,
-                          OrderDetailRepository orderDetailRepository, ProductRepository productRepository) {
+                          OrderDetailRepository orderDetailRepository,
+                          ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.productRepository = productRepository;
@@ -155,37 +157,46 @@ public class ReceiptService {
             item.setQuantity(orderDetailEntity.getQuantity());
             listofItems.add(item);
         }
-//        for (int i = 0; i < orderDetailEntities.size() - 1; i++) {
-//        for (int i = 0; i < orderDetailEntities.size(); i++) {
-//            OrderDetailEntity orderDetailEntity = orderDetailEntities.get(i);
-//            double quantityForThisItem = orderDetailEntity.getQuantity();
-//            Long productId = orderDetailEntity.getProductEntityId();
-//            log.info("The order with this product id " + productId + "  found");
-//            Optional<ProductEntity> productEntityOptional = productRepository.findById(productId);
-//            ProductEntity productEntity = productEntityOptional.get();
-//            double price = productEntity.getPrice();
-//            totalPrice = totalPrice + quantityForThisItem * price;
-//            Item items = new Item();
-//            items.setProductId(productEntity.getProductEntityId());
-//            items.setProductName(productEntity.getProductName());
-//            items.setProductPrice(productEntity.getPrice());
-//            items.setQuantity(orderDetailEntity.getQuantity());
-//            listofItems.add(items);
-//
-//        }
-        ////        List<OrderDetailEntity> orderDetailEntities = orderDetailRepository.findByOrderEntityId(orderId);
-        //////        if(orderDetailEntityOptional.isPresent()){
-        //////            log.info("The order with this id " + orderId + " found");
-        //////            OrderDetailEntity orderDetailEntity = orderDetailEntityOptional.get();
-        //////            receipt1.setOrderId(orderDetailEntity.getOrderEntityId());
-        //////            receipt1.setId(orderDetailEntity.getId());
-        //////            receipt1.setProductId(orderDetailEntity.getProductEntityId());
-        //////            receipt1.setQuantity(orderDetailEntity.getQuantity());
+;
         receipt.setTotalPrice(totalPrice);
         receipt.setItems(listofItems);
         return receipt;
 
     }
+    public Receipt calcReceipt2(long orderId) {
+        Receipt receipt = calcReceipt(orderId);
+
+        List<ItemData> itemDatas  = orderDetailRepository.getItems(orderId);
+        double totalPrice = 0;
+
+        List<Item> listofItems = new ArrayList<>();
+
+        for(ItemData itemData: itemDatas) {
+            double price = itemData.getPrice();
+            Long productId = itemData.getProductEntityId();
+            
+        }
+
+//        for (OrderDetailEntity orderDetailEntity : orderDetailEntities) {
+//            double quantityForThisItem = orderDetailEntity.getQuantity();
+//            ProductEntity productEntity = orderDetailEntity.getProductEntity();
+////            Long productId = orderDetailEntity.getProductEntityId();
+//            double price = productEntity.getPrice();
+//            totalPrice = totalPrice+ quantityForThisItem + price;
+//            Item item = new Item();
+//            item.setProductId(productEntity.getProductEntityId());
+//            item.setProductName(productEntity.getProductName());
+//            item.setProductPrice(productEntity.getPrice());
+//            item.setQuantity(orderDetailEntity.getQuantity());
+//            listofItems.add(item);
+//        }
+        ;
+        receipt.setTotalPrice(totalPrice);
+        receipt.setItems(listofItems);
+        return receipt;
+
+    }
+
 }
 //log
 
