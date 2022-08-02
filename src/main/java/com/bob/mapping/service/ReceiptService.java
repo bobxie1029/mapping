@@ -22,7 +22,6 @@ import java.util.Optional;
 public class ReceiptService {
     private OrderRepository orderRepository;
     private OrderDetailRepository orderDetailRepository;
-    private ProductRepository productRepository;
 
     //By annotating OrderRepository with @Repository, you tell Spring to instantiate (create) an object of OrderRepository
     //you just get the reference and use it.
@@ -35,11 +34,10 @@ public class ReceiptService {
 
     //after you get the reference of the object, you can use the method to communicate with it.
     public ReceiptService(OrderRepository orderRepository,
-                          OrderDetailRepository orderDetailRepository,
-                          ProductRepository productRepository) {
+                          OrderDetailRepository orderDetailRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
-        this.productRepository = productRepository;
+
     }
 
 //    public ReceiptService(OrderDetailRepository orderDetailRepository){
@@ -67,74 +65,15 @@ public class ReceiptService {
             receipt.setOrderId(orderEntity.getOrderEntityId());
             receipt.setCustomerName(orderEntity.getCustomerName());
             receipt.setTotalPrice(10);
-//
-//            OrderDetailEntity orderDetailEntity = new OrderDetailEntity();
-//            orderDetailEntity.
 
         } else {
 
             log.info("The order with this id " + orderId + " doesn't exist in database");
         }
 
-
-        //query the database get the order for this id.
-        //pass the information to receipt object.
-
         return receipt;
     }
 
-    //    public Receipt2 calcReceipt2(long productId){
-//        Receipt2 receipt = new Receipt2();
-//        Optional<ProductEntity> productEntityOptional = productRepository.findById(productId);
-//        if(productEntityOptional.isPresent()){
-//            log.info("The product with this id " + productId + " found");
-//            ProductEntity productEntity = productEntityOptional.get();
-//            receipt.setProductId(productEntity.getId());
-//            receipt.setProductName(productEntity.getProductName());
-//            receipt.setPrice(productEntity.getPrice());
-//        }
-//        return receipt;
-//    }
-//    public Receipt1 calcReceipt1(long orderId){
-//        Receipt1 receipt1 = calcReceipt1(orderId);
-//
-//        List<OrderDetailEntity> orderDetailEntities = orderDetailRepository.findByOrderEntityId(orderId);
-////        if(orderDetailEntityOptional.isPresent()){
-////            log.info("The order with this id " + orderId + " found");
-////            OrderDetailEntity orderDetailEntity = orderDetailEntityOptional.get();
-////            receipt1.setOrderId(orderDetailEntity.getOrderEntityId());
-////            receipt1.setId(orderDetailEntity.getId());
-////            receipt1.setProductId(orderDetailEntity.getProductEntityId());
-////            receipt1.setQuantity(orderDetailEntity.getQuantity());
-////
-////        }else{
-////            log.info("The order with this id " + orderId + " doesn't exist in database");
-////        }
-//        //find productId from ordernetitytable
-//
-//        Receipt2 receipt2 = new Receipt2();
-//        double totalPrice = 0;
-//
-//        for (OrderDetailEntity orderDetailEntity: orderDetailEntities){
-//            double quantityForThisItem = orderDetailEntity.getQuantity();
-//            Long  productId =orderDetailEntity.getProductEntityId();
-//
-//        }
-//        for(int i = 0; i < orderDetailEntities.size() - 1; i++){
-//            OrderDetailEntity orderDetailEntity = orderDetailEntities.get(i);
-//            double quantityForThisItem = orderDetailEntity.getQuantity();
-//            Long productId = orderDetailEntity.getProductEntityId();
-//           Optional<ProductEntity> productEntities = productRepository.findById(productId);
-//           if(){
-//
-//           }
-//
-//
-//            totalPrice = totalPrice + receipt1.getQuantity() * receipt2.getPrice();
-//        }
-//        return receipt1;
-//
-//    }
     //recursive calcReceipt1
     public Receipt calcReceipt1(long orderId) {
         Receipt receipt = calcReceipt(orderId);
@@ -173,8 +112,17 @@ public class ReceiptService {
 
         for(ItemData itemData: itemDatas) {
             double price = itemData.getPrice();
+            String name = itemData.getProductName();
+            int quantity = itemData.getQuantity();
             Long productId = itemData.getProductEntityId();
-            
+            totalPrice = totalPrice + quantity * price;
+            Item item = new Item();
+            item.setProductId((long)productId);
+            item.setProductName(name);
+            item.setProductPrice(price);
+            item.setQuantity(quantity);
+            listofItems.add(item);
+
         }
 
 //        for (OrderDetailEntity orderDetailEntity : orderDetailEntities) {
