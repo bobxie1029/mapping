@@ -32,5 +32,11 @@ public class ProductController {
         return receiptService.calcReceipt2(id);
     }
 
+    @DeleteMapping("/deleteProduct/{id}")
+    public ProductDto deleteProduct(@PathVariable("id") int id){
+        return productService.deleteProducts(id);
+    }
+
+
 
 }

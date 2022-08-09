@@ -2,6 +2,7 @@ package com.bob.mapping.controller;
 
 import com.bob.mapping.dto.ErrorResponse;
 import com.bob.mapping.dto.OrderDto;
+import com.bob.mapping.exception.OrderDetailExistsException;
 import com.bob.mapping.exception.NoSuchOrderExistsException;
 import com.bob.mapping.service.OrderService;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 @RestController
 public class OrderController {
-    OrderService orderService;
+    private OrderService orderService;
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -20,7 +21,7 @@ public class OrderController {
 
     @GetMapping("/order/{id}")
     public OrderDto getOrder(@PathVariable("id") int id) {
-        return orderService.getOrders(id);
+        return orderService.getOrder(id);
     }
 
     @ExceptionHandler(value
@@ -30,6 +31,24 @@ public class OrderController {
     handleCustomerAlreadyExistsException(
             NoSuchOrderExistsException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                ex.getMessage());
+    }
+
+    @DeleteMapping("/deleteOrder/{id}")
+    public OrderDto deleteOrder(@PathVariable("id") int id) {
+        return orderService.deleteOrders(id);
+    }
+
+    @DeleteMapping("/deleteOrder1/{id}")
+    public OrderDto deleteOrder1(@PathVariable("id") int id){
+        return orderService.deleteOrders1(id);
+    }
+
+    @ExceptionHandler(value = OrderDetailExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleOrdersAlreadyExistsException
+            (OrderDetailExistsException ex){
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage());
     }
 }

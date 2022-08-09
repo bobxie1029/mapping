@@ -1,17 +1,26 @@
 package com.bob.mapping.service;
 
 import com.bob.mapping.dto.ProductDto;
+import com.bob.mapping.entities.OrderDetailEntity;
 import com.bob.mapping.entities.ProductEntity;
+import com.bob.mapping.exception.NoSuchOrderExistsException;
+import com.bob.mapping.exception.OrderDetailExistsException;
+import com.bob.mapping.repository.OrderDetailRepository;
 import com.bob.mapping.repository.ProductRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+@Log4j2
 @Service
 public class ProductService {
     private ProductRepository productRepository;
-    public ProductService(ProductRepository productRepository){
+    private OrderDetailRepository orderDetailRepository;
+    public ProductService(ProductRepository productRepository, OrderDetailRepository orderDetailRepository){
         this.productRepository = productRepository;
+        this.orderDetailRepository = orderDetailRepository;
     }
     public List<ProductDto> getProducts(){
         List<ProductDto> productDtos = new ArrayList<>();
@@ -26,9 +35,65 @@ public class ProductService {
         }
         return productDtos;
     }
-
-
-
-
-
-}
+    public ProductDto getProduct(long productId){
+        ProductDto productDto = new ProductDto();
+        Optional<ProductEntity> productEntityOptional = productRepository.findById(productId);
+        if(productEntityOptional.isPresent()){
+            log.info("The product with this id " + productId + " found");
+            ProductEntity productEntity = productEntityOptional.get();
+            productDto.setId(productEntity.getProductEntityId());
+            productDto.setProductName(productEntity.getProductName());
+            productDto.setPrice(productEntity.getPrice());
+        }
+        else{
+            log.info("The product with this id " + productId + " doesn't exist in database");
+            throw new NoSuchOrderExistsException(productId + " doesn't exist in database");
+        }
+        return productDto;
+    }
+    public ProductDto deleteProducts(long productId){
+        ProductDto productDto = new ProductDto();
+        Optional<ProductEntity> productEntityOptional = productRepository.findById(productId);
+        List<OrderDetailEntity> orderDetailEntityOptional = orderDetailRepository.findByOrderEntityId(productId);
+        if(productEntityOptional.isPresent()){
+            for(OrderDetailEntity entity: orderDetailEntityOptional){
+                orderDetailRepository.delete(entity);
+            }
+            log.info("The product with this id " + productId + " found");
+            ProductEntity productEntity = productEntityOptional.get();
+            productRepository.delete(productEntity);
+            productDto.setId(productEntity.getProductEntityId());
+            productDto.setProductName(productEntity.getProductName());
+            productDto.setPrice(productEntity.getPrice());
+        }
+        else{
+            log.info("The product with this id " + productId + "doesn't exist in database");
+            throw new NoSuchOrderExistsException(productId + " doesn't exist in database");
+        }
+        return productDto;
+    }
+    public ProductDto deleteProducts1(long productId){
+        ProductDto productDto = new ProductDto();
+        Optional<ProductEntity> productEntityOptional = productRepository.findById(productId);
+        List<OrderDetailEntity> orderDetailEntityOptional = orderDetailRepository.findByOrderEntityId(productId);
+        if(productEntityOptional.isPresent()){
+            if(orderDetailEntityOptional.size() == 0){
+                log.info("The product with this id " + productId + " found");
+                ProductEntity productEntity = productEntityOptional.get();
+                productRepository.delete(productEntity);
+                productDto.setId(productEntity.getProductEntityId());
+                productDto.setProductName(productEntity.getProductName());
+                productDto.setPrice(productEntity.getPrice());
+            }
+            else{
+                log.info("Product Id " + productId + " has order details associated with it");
+                throw new OrderDetailExistsException(productId + " has order details associated with it");
+            }
+        }
+        else{
+            log.info("The product with this id " + productId + " doesn't exist in database");
+            throw new NoSuchOrderExistsException(productId + " doesn't exist in database");
+        }
+        return productDto;
+    }
+}//throw exception
