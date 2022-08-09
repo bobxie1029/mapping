@@ -1,15 +1,14 @@
 package com.bob.mapping.controller;
 
-import com.bob.mapping.dto.ErrorResponse;
 import com.bob.mapping.dto.ProductDto;
 import com.bob.mapping.dto.Receipt;
-import com.bob.mapping.exception.NoSuchOrderExistsException;
 import com.bob.mapping.service.ProductService;
 import com.bob.mapping.service.ReceiptService;
-import org.springframework.http.HttpStatus;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@Log4j2
 @RestController
 public class ProductController {
     private ProductService productService;
@@ -38,5 +37,12 @@ public class ProductController {
     }
 
 
+    @PostMapping("/product")
+    public ProductDto postProduct(@RequestBody ProductDto body){
+        log.info("Received product name " + body.getProductName() + " with price " + body.getPrice());
+        ProductDto productDto = new ProductDto();
+        log.info("assigned id "  + body.getId());
+        return productDto;
+    }
 
 }
