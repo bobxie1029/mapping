@@ -32,4 +32,12 @@ public class OrderController {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                 ex.getMessage());
     }
+    @PostMapping("/order")
+    public OrderDto postOrder(@RequestBody OrderDto body){
+        log.info("Received order name " + body.getCustomerName() + " with date " +body.getSignedDate());
+        OrderDto orderDto = orderService.createOrder(body);
+        log.info("assigned id" + orderDto.getId());
+        return orderDto;
+    }
+
 }
