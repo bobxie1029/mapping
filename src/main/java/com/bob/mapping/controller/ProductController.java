@@ -35,8 +35,6 @@ public class ProductController {
     public ProductDto deleteProduct(@PathVariable("id") int id){
         return productService.deleteProducts(id);
     }
-
-
     @PostMapping("/product")
     public ProductDto postProduct(@RequestBody ProductDto body){
         log.info("Received product name " + body.getProductName() + " with price " + body.getPrice());

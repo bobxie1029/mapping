@@ -9,6 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Log4j2
 @RestController
@@ -18,7 +20,10 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
-
+    @GetMapping("/listOrders")
+    public List<OrderDto> listAllOrder(){
+        return orderService.getOrders();
+    }
     @GetMapping("/order/{id}")
     public OrderDto getOrder(@PathVariable("id") int id) {
         return orderService.getOrder(id);
@@ -58,5 +63,4 @@ public class OrderController {
         log.info("assigned id" + orderDto.getId());
         return orderDto;
     }
-
 }

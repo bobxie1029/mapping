@@ -1,8 +1,10 @@
 package com.bob.mapping.service;
 
 import com.bob.mapping.dto.OrderDto;
+import com.bob.mapping.dto.ProductDto;
 import com.bob.mapping.entities.OrderDetailEntity;
 import com.bob.mapping.entities.OrderEntity;
+import com.bob.mapping.entities.ProductEntity;
 import com.bob.mapping.exception.OrderDetailExistsException;
 import com.bob.mapping.exception.NoSuchOrderExistsException;
 import com.bob.mapping.repository.OrderDetailRepository;
@@ -11,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +27,18 @@ public class OrderService {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
     }
-
+    public List<OrderDto> getOrders(){
+        List<OrderDto> orderDtos = new ArrayList<>();
+        List<OrderEntity> orderEntities = orderRepository.findAll();
+        for(OrderEntity entity: orderEntities){
+            OrderDto orderDto = new OrderDto();
+            orderDto.setId(entity.getOrderEntityId());
+            orderDto.setCustomerName(entity.getCustomerName());
+            orderDto.setSignedDate(entity.getSignedDate());
+            orderDtos.add(orderDto);
+        }
+        return orderDtos;
+    }
     public OrderDto getOrder(long orderId) {
         OrderDto orderDto = new OrderDto();
         Optional<OrderEntity> orderEntityOptional = orderRepository.findById(orderId);
